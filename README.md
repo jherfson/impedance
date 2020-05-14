@@ -3,9 +3,8 @@ Sum of square errors between the experimental curve and the model curve
 
 ## O módulo da Impedância
 
-$$
+
 |Z|=\sqrt{(Z')²+(Z'')²}
-$$
 
 
 
