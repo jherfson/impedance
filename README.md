@@ -29,7 +29,7 @@ Z = \frac{R}{1+\omega²\tau²} - i\frac{\omega\tau R}{1+\omega²\tau²}
 $$
 
 $$
- \tau = r*C
+\tau = rC
 $$
 
 
