@@ -80,13 +80,13 @@ double angular_frequency(double frequency)
 }
 
 // funçõ da impedância resistor
-// double z_resistor(double resistor)
-// {
-//     //double z;
-//     complex<double> z(resistor, 0);
-//     return 0;
+double z_resistor(double resistor)
+{
+    //double z;
+    complex<double> z(resistor, 0);
+    return 0;
      
-// }
+}
 
 // função da impedância capacitor
 double z_capacitor(double capacitor, double w)

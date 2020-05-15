@@ -1,10 +1,24 @@
-# impedance
-Sum of square errors between the experimental curve and the model curve
+
+
+## Resistor
+
+
+
+
+
+## Capacitor
+
+
+
+
+
+
 
 ## O módulo da Impedância
 
-
+$$
 |Z|=\sqrt{(Z')²+(Z'')²}
+$$
 
 
 
@@ -12,6 +26,10 @@ Sum of square errors between the experimental curve and the model curve
 
 $$
 Z = \frac{R}{1+\omega²\tau²} - i\frac{\omega\tau R}{1+\omega²\tau²}
+$$
+
+$$
+ \tau = r*C
 $$
 
 
@@ -27,9 +45,6 @@ $$
 $$
 \omega'=\omega''=\frac{1}{|Z|}
 $$
-
-
-
 
 
 
