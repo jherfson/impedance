@@ -11,9 +11,7 @@
 
 
 using std::complex;
-// using std::cout;
-// using std::endl;
-// using std::cin;
+
 
 using namespace std; 
 
