@@ -1,6 +1,3 @@
-// Implementação do sistema pra impedância com o método de gradiente
-// versão: 0.1
-
 #define _USE_MATH_DEFINES
 
 #include <iostream>
@@ -8,183 +5,419 @@
 #include <complex>
 #include <string>
 #include <fstream>
-
+#include <random>
+#include <iomanip>
 
 using std::complex;
 
+using namespace std;
 
-using namespace std; 
-
-
-
-//using COMPLX = complex<double>;
 
 // protótipo da função da frequência angular
 double angular_frequency(double frequency); // protótipo da função
 
-// impedância resistor
-double z_resistor(double R);
+// protótipo da função da impedância real
+double impedance_real(int resistor, int capacitor);
 
-// impedância capacitor
-double z_capacitor(double capacitor);
+// protótipo da função da impedância imaginária
+double impedance_image(int resistor, int capacitor);
 
-// impedância CPE
-double z_CPE(double frequency, double T);
+// random frequency
+double generate_data(int f_Hz_initial, int f_Hz_final, float decade, double capacitor, double resistor);
 
-void output(string filename);
+
+double Gradient(double xo[], double fxo, int n, int MAX_IT, int func, float LAMBDA, float LOWLIMIT, float HIGLIMIT);
+
+
+double funcao(double S1_c, double S1_r, double S2_c, double S2_r);
 
 // função principal
+/****
+ * 
+ * 
+ ****/ 
 int main() 
 {
-    double f, T, r;
-    string filename;
-    // cout << "Digite o valor frequência:\n";
-    // cin >> f;
-    // cout << "Digite o Periodo:\n";
-    // cin >> T; 
-    // cout << "Digite o valor do resistor:\n";
-    // cin >> r; 
-    // cout << "Valor da frequência angular " << angular_frequency(f) << "\n";
-    // cout << "Valor da frequência: "<< f << "\n";
+  
+    int in, final;
+    float decade, capacitor, resistor;
+    cout << "Digite o valor inicio\n";
+    cin >> in;
     
-    // cout << "-----------------------------------\n";
+    cout << "Digite o valor final\n";
+    cin >> final;
+    
+    cout << "Digite o valor decade\n";
+    cin >> decade;
 
-    // cout << "Valor z_CPE " << z_CPE(f, T) << "\n";
-    // cout << "Valor do Período: " << T << endl;
+    cout << "Digite o valor capacitor\n";
+    cin >> capacitor;
 
-    cout << "Digite o nome do Arquivo: ";
-    cin >> filename;
-    output(filename);
+    cout << "Digite o valor resistor\n";
+    cin >> resistor;
 
-
-
-    // cout << "-----------------------------------\n";
-
-    // cout << "Valor Resistor " << z_resistor(r) << "\n";
-    // cout << "Valor do Período: " << r << endl;
-
+    cout << generate_data(in, final, decade, capacitor, resistor);
 
     return 0;
-
 }
 
-// função da frequência angular
+/****
+ * 
+ * Função angular_frquency()
+ * 
+ * Descrição: Cálcula a frequência angular.
+ * 
+ * Parâmetro: frequency (entrada): o valor da frequência.
+ * 
+ * Retorno: A frequênci angular.
+ * 
+ ****/
 double angular_frequency(double frequency) 
 {
-    double w;
-    w = 2*M_PI*frequency;
-    return w;
-
+    double omega;
+    omega = 2*M_PI*frequency;
+    
+    return omega;
 }
 
-// funçõ da impedância resistor
-double z_resistor(double resistor)
+/****
+ * 
+ * Função double impedance_real()
+ * 
+ * Descrição: Cálcula a impedância real.
+ * 
+ * Parâmetro: Omega: O valor de entrada para pode cálcular a impedância imaginária.
+ * 
+ * Retorno: O valor da impedância real.
+ * 
+ ****/
+double impedance_real(double omega)
 {
-    //double z;
-    complex<double> z(resistor, 0);
-    return 0;
-     
+    double z_real, r, c;
+    r = 10000;
+    c = 1e-8;
+    z_real = r/(1+pow(r*c*omega, 2));
+
+    return z_real;   
 }
 
-// função da impedância capacitor
-double z_capacitor(double capacitor, double w)
+/****
+ * 
+ * Função double impedance_image()
+ * 
+ * Descrição: Cálculo a impedância imaginária.
+ * 
+ * Parâmetro: Omega:  O valor de entrada para pode cálcular a impedância imaginária.
+ *
+ * Retorno: O valor da impedância imaginária.
+ * 
+ ****/
+double impedance_image(double omega)
 {
-    double z;
-    complex<double> i(0, 1);
-    //z = 1/abs(i)*angular_frequency(w)*capacitor;
-    z = pow(abs(i)*angular_frequency(w)*capacitor, -1);
-
-
-    return z;
+    double z_image, r, c;   
+    r = 10000;
+    c = 1e-8;
+    z_image = -omega*pow(r, 2)*c/(1 + pow(omega*r*c, 2));
+    
+    return z_image;
 }
 
-// função da impedância CPE
-double z_CPE(double frequency, double T)
+/****
+ * 
+ * Função double generate_data()
+ * 
+ * Descrição: Gera uma frequência, impedância real e impedância imaginário
+ * 
+ * Parâmetros: f_Hz_initial(entrada): O valor inicio da frequência. Valor inicial.
+ *             f_Hz_final (entrada): O valor final da frequência. Esse valor é o valor final do intervalo.
+ *             decade (entrada): Valor por cada década
+ * 
+ * Retorno: frequência  
+ * 
+ ****/
+double generate_data(int f_Hz_initial, int f_Hz_final, float decade, double capacitor, double resistor)
 {
-    double w, z;
-    int p = 1;
-    w = angular_frequency(frequency);
-    complex<double> i(0, 1);
-    // z = 1/T*pow((abs(i)*w), p);
-    z = pow(T*pow((abs(i)*w), p), -1); 
+    // 1. Vai gerar um random da frequência e incluir no vetor.
+    // 2. Cálcular o omega e colocar em uma vetor também. 
+    int n_i, n_f;
+    n_i = decade*log10(f_Hz_initial);
+    n_f = decade*log10(f_Hz_final);
 
-    return z;
-
-}
-
-// Leitura do arquivo com os dados da impedância
-void output(string filename)
-{
-    ifstream txtFile;
-    string STRING;
-
-
-    int tam = 0;
-    string f[tam], z_real[tam], z_im[tam];
-
-    txtFile.open(filename);
-
-    while(!txtFile.eof())
-    {
-        tam++;
-        //getline(txtFile, STRING);
-        getline(txtFile, STRING,' ');
-
-        f[tam] = STRING;
-        z_real[tam] = STRING;
-        z_real[tam] = STRING;
-
+    
+    double f[n_f+1], omega_array[n_f+1], z_real_array[n_f+1], z_image_array[n_f+1];
         
+    for (int i = n_i ; i <= n_f+1; i++) {
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> dist(1, -1);
+
+        f[i] = pow(10,  i/decade);
+        omega_array[i] = angular_frequency(f[i]);
+        z_real_array[i] = (1 + 0.01 * dist(mt)) * impedance_real(omega_array[i]);
+        z_image_array[i] = (1 + 0.01 * dist(mt)) * impedance_image(omega_array[i]);
+       
+    }
+   
+    ofstream outfile;
+    outfile.open("result.txt");
+    int i = 0;
+    while (i <= n_f) {
+        outfile << f[i] << ' ' << z_real_array[i] << ' ' << z_image_array[i] << '\n';
+        i++;
+    }
+    outfile.close();
+
+
+
+    return 0;
+}
+
+/****
+ * 
+ * 
+ *
+ ****/
+double funcao(double S1_c, double S1_r, double S2_c, double S2_r)
+{
+    double S1_C,S1_R, capacitor_old,resistor_old, error, c_error, r_error, alpha, S1_C_2, S1_R_2;
+
+    error = 0.001;
+    alpha = 0.001;
+
+    int W = 1;
+
+    
+    // interações 
+    unsigned int iters = 0;
+    unsigned int max_iters = 10000;
+    c_error = error + 1;
+    r_error = error + 1;
+    
+    while ((error < c_error) && (error < r_error) && (iters < max_iters)) {
+        
+        capacitor_old = capacitor;
+        resistor_old = resistor;
+        
+        // gradient em função do capacitor        
+        S1_C = 2 * W * (resistor * pow(1+pow(omega_array[iters] * resistor * capacitor, 2), -1) - z_real_array[iters]) * (-2 * pow(resistor, 3) * pow(omega_array[iters], 2) * capacitor)/pow(1 + pow(omega_array[iters] * resistor * capacitor, 2), 2);
+
+        // gradient em função do resistor
+        // S1_R = 2 * W * (resistor - z_real_array[iters] * (1 + pow(omega_array[iters]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[iters]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[iters]*resistor*capacitor, 2), 3);
+        S1_R = 2 * W * (resistor * pow(1+pow(omega_array[iters] * resistor * capacitor, 2), -1) - z_real_array[iters]) * (-pow(omega_array[iters] * resistor * capacitor, 2) + 1)/pow(1 + pow(omega_array[iters] * resistor * capacitor, 2), 2);
+
+        // capacitor = capacitor - alpha * S1_C
+        capacitor -= alpha * S1_C;
+        
+        resistor -= alpha * S1_R;
+
+        // delta C => 0.001
+        // delta R => 0.001
+        c_error = abs(capacitor_old - capacitor);
+        r_error = abs(resistor_old - resistor);
+
+        // c_error = abs(capacitor - capacitor_old);
+        // r_error = abs(resistor - resistor_old);
+        iters++;
+
+        cout << "c_erro: " << c_error << "\n";
+        cout << "r_error: " << r_error << "\n\n";
+
+        cout << "S1_C: " << S1_C << "\n";
+        // cout << "S1_C_2: " << S1_C_2 << "\n\n";
+
+        cout << "S1_R: " << S1_R << "\n";
+        // cout << "S1_R_2: " << S1_R_2 << "\n\n";
+
+    return 0;    
+}
+
+/****
+ * 
+ * 
+ *
+ ****/
+#define MAXVAR ??? dimensão da função
+double Gradient(double xo[], double fxo, int n, int MAX_IT, int func, float LAMBDA, float LOWLIMIT, float HIGLIMIT)
+// x0 é o ponto de partida; fxo é o valor da f.obj em x0; MAX de ITERAÇÕES; parâmetro do método; LIMITES DO DOMÍNIO
+{
+        double  dir[MAXVAR], xh[MAXVAR], h=0.001F, delta, fx, passo;
+        int i, j;
+
+        memcpy(xh,xo, n*sizeof(double));
+        for (i=0; i< n; i++){
+                xh[i]   = xh[i] + h;
+                delta   = funccod[func](xh, n) - fxo;
+                dir[i]  = (-1.0F) * delta/h;
+                dir[i]  = dir[i] / fabs(dir[i]);
+                xh[i]   = xh[i] - h;
+        }
+        for (i=0; i < MAX_IT; i++){
+                for (j=0; j< n; j++){
+                        if (dir[j] < 0)
+                                passo = LAMBDA*(xh[j] - LOWLIMIT);
+                        else
+                                passo = LAMBDA*(HIGLIMIT - xh[j]);
+                        xh[j] += passo*dir[j];
+                }
+                fx = funccod[func](xh, n);
+         
+                if (fx > fxo)
+                        break;
+                fxo = fx;
+        }
+        return fxo;
+}
 
 
 
 
-        cout << f[tam] ;
-        cout << z_real[tam] ;
-        cout << z_real[tam] << endl;
+
+
+
+
+
+
+    
+    
+    
+
 
     }
 
-    txtFile.close();
+
+
+
+
+
+
+
 
 }
 
-double sum_erro_impedance(double f, double z_real, double z_img)
-{
-
-}
-
-
-
-
-// void output(string filename)
+/****
+ * 
+ * Função ouble derivative_C(double W=1, double alpha=0.01)
+ * 
+ * Descrição : Função que é responsável pela método de gradiente.
+ *             Nessa função tem as derivadas S1_C, S1_R.
+ * 
+ * Parâmetros: W=1: É o peso da equação que já está definido na entrada
+ *             aplha: Taxa de aprendizado
+ * 
+ * 
+ * Retorno: Novo capacitor e o resistor           
+ * 
+ ****/
+// double gradient_descent(double W, double alpha, double resistor, double capacitor, unsigned int max_iters, double omega_array[], double z_real_array[], double z_image_array[])
 // {
-//     FILE *file;
-//     //Quantidade de linhas (pode servir pra algum calculo estatistico)
-//     int quant=0;
-//     float x[quant], y[quant], z[quant];
-//     //Tamanho de caracteres encontrados em uma linha (chute)
-//     char linha[50];
+//     double S1_C,S1_R, capacitor_old,resistor_old, error, c_error, r_error;
+//     error = 0.001;
 
-//     //Não foi feito aqui aquele teste pra saber se o arquivo foi lido corretamente (não precisei)
-//     file = fopen("dados.txt", "r");
     
-//     //Enquanto não alcançar o fim do arquivo, faça o seguinte linha por linha:
-//     while(fgets(linha, sizeof(linha), file)) 
-//     {
-//         x[quant] = atof(strtok())
-//         x[quant] = atof(strtok(linha, " "));
-//         y[quant] = atof(strtok(NULL, " "));
-//         quant++;    
+//     // interações 
+//     unsigned int i = 0;
+//     c_error = error + 1;
+//     r_error = error + 1;
+    
+//     while (error < c_error  && error < r_error && i < max_iters) {
+        
+//         capacitor_old = capacitor;
+//         resistor_old = resistor;
+        
+//         // gradient em função do capacitor
+//         S1_C = 2 * W * (2* pow(omega_array[i], 2) * resistor * capacitor * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))))/pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
+        
+//         // gradient em função do resistor
+//         S1_R = 2 * W * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
+
+
+//         // capacitor = capacitor - alpha * S1_C
+//         capacitor -= alpha * S1_C;
+        
+//         resistor -= alpha * S1_R;
+
+//         // delta C => 0.001
+//         // delta R => 0.001
+//         c_error = abs(capacitor_old - capacitor);
+//         r_error = abs(resistor_old - resistor);
+//         i++;
+
+//         cout << "c_erro: " << c_error << "\n";
+//         cout << "r_error: " << r_error << "\n\n";
+
+
 //     }
-//     fclose(file);
-    
-//     system("pause");
-    
-//     return 0;
+//         return 0;
 // }
 
 
 
+ 
+ 
+ 
+ // gradient_descent(1, 0.001, 0.1, 0.1, 10000);
 
 
+
+
+    // Gradient Z' => dS1/dC
+    // int W = 1;
+    // double S1_C;
+  
+
+    // S1_C => capacitor
+    // S1_C = 2 * W * (2* O * resistor * capacitor * (resistor - z_real_array[i] * (1 + O * R * C )))/pow(1+ O * C * R, 3);
+
+    // Gradient Z' => dS1/dR
+    // double S1_R;
+    // S1_R => resistor
+    // S1_R = 2 * W * (resistor - z_real_array[i] * (1 + O * R * C)) * (-1 + 3 * O * R * C)/R*pow(1+O*R*C, 3);
+
+    // Gradient Z" => dS2/dC
+    // double S2_C, S2_R;
+
+    // S2_C => capacitor 
+    // S2_C = 2 * W * (-omega_array[i] * R * capacitor - z_image_array[i] * (1 + O[i]*R*C))*(1 + 3*O[i]*R*C)/O[i]*R*C*pow(1+O[i]*R*C, 3);
+
+
+    // S2_R => resistor
+    // S2_R = 2 * W * (2 * (-omega_array[i] * R * capacitor - z_image_array[i]*(1 + O[i]*R*C))*(2*O[i]*R*C + 1))/omega_array[i]*pow(resistor, 3)*capacitor*pow(1+O[i]*R*C, 3);
+
+
+    //x_(k+1) = X_k - alpha*gradient(x_k) => S1
+    // double alpha, resistor_old, capacitor_old, S1_C_sum, S1_R_sum;
+    // capacitor = capacitor - alpha*S1_C;
+    
+    // resistor
+    // resistor = resistor - alpha*S1_R;
+    
+    // i = 0;
+    // resistor_old, capacitor_old = 0;
+    // S1_C_sum, S1_R_sum = 0.0;
+    // // alpha = 0.01;
+  
+    // while (abs(resistor - resistor_old) > 0.001 && abs(capacitor - capacitor_old) > 0.001) {
+        
+    //     S1_C = 2 * W * (2* pow(omega_array[i], 2) * resistor * capacitor * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))))/pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
+    //     // S1_C = 2 * W * ((resistor/1 + pow(resistor*capacitor*omega_array[i], 2))-z_real_array[i])*(2*pow(omega_array[i], 2)*resistor*capacitor)/pow(1+pow(omega_array[i]*resistor*capacitor,2),2);
+    //     S1_C_sum = S1_C_sum + S1_C;
+        
+    //     S1_R = 2 * W * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
+    //     // S1_R = 2*W*((resistor/1+pow(omega_array[i]*resistor*capacitor,2))-z_real_array[i])*(-1+3*pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor,2)*pow(1+pow(omega_array[i]*capacitor*resistor,2),2);
+    //     S1_R_sum = S1_R_sum + S1_R;
+
+    //     resistor_old = resistor;
+    //     capacitor_old = capacitor;
+
+    //     capacitor = capacitor_old - alpha * S1_C;
+    //     resistor = resistor_old - alpha * S1_R;
+    //     i++;
+
+    //     cout << "S1_C_sum: " << S1_C_sum << "\n";
+    //     cout << "S1_R_sum: " << S1_R_sum << "\n";
+    //     cout << "Capacitor: " << capacitor << "\n";
+    //     cout << "Resistor: " << resistor << "\n";
+        
+    // }
+
+    // gradient_descent(1, 0.001, 0.1, 0.1, 10000, omega_array[n_f+1], z_real_array[n_f], z_image_array[n_f])
