@@ -180,7 +180,7 @@ double generate_data(int f_Hz_initial, int f_Hz_final, float decade, double capa
 double func()
 {
     int W;
-    double S1_c, S1_r, S2_c, S2_r, r, c;
+    double S1_c, S1_r, S2_c, S2_r, r, c, sum_c, sum_r;
     // r -> resitor, c -> capacitor
 
     S1_c = 2 * W * (r * pow(1 + pow(angular_frequency(i) * r * c, 2), -1) - z_real_array[iters]) * (-2 * pow(r, 3) * pow(angular_frequency(i), 2) * c)/pow(1 + pow(angular_frequency(i) * r * c, 2), 2);
@@ -192,7 +192,11 @@ double func()
     S2_r = 2 * W * (-angular_frequency(i) * pow(r,2) * c * pow(1 + angular_frequency(i) + pow(angular_frequency(i) * r * c, 2), -1) - z_image_array(i)) * (-2 * c * r * angular_frequency(i))/(pow(1 + pow(angular_frequency(i)* c * r, 2), 2));
        
 
-    return 0;    
+    sum_c = S1_c + S2_c;
+
+    sum_r = S1_r + S2_r;
+    
+    return sum_c, sum_r;    
 }
 
 /****
