@@ -169,7 +169,7 @@ double generate_data(int f_Hz_initial, int f_Hz_final, float decade, double capa
 
 
 
-    return 0;
+    return z_real_array[i], z_image_array[i];
 }
 
 /****
@@ -177,56 +177,20 @@ double generate_data(int f_Hz_initial, int f_Hz_final, float decade, double capa
  * 
  *
  ****/
-double funcao(double S1_c, double S1_r, double S2_c, double S2_r)
+double func()
 {
-    double S1_C,S1_R, capacitor_old,resistor_old, error, c_error, r_error, alpha, S1_C_2, S1_R_2;
+    int W;
+    double S1_c, S1_r, S2_c, S2_r, r, c;
+    // r -> resitor, c -> capacitor
 
-    error = 0.001;
-    alpha = 0.001;
-
-    int W = 1;
-
+    S1_c = 2 * W * (r * pow(1 + pow(angular_frequency(i) * r * c, 2), -1) - z_real_array[iters]) * (-2 * pow(r, 3) * pow(angular_frequency(i), 2) * c)/pow(1 + pow(angular_frequency(i) * r * c, 2), 2);
     
-    // interações 
-    unsigned int iters = 0;
-    unsigned int max_iters = 10000;
-    c_error = error + 1;
-    r_error = error + 1;
-    
-    while ((error < c_error) && (error < r_error) && (iters < max_iters)) {
-        
-        capacitor_old = capacitor;
-        resistor_old = resistor;
-        
-        // gradient em função do capacitor        
-        S1_C = 2 * W * (resistor * pow(1+pow(omega_array[iters] * resistor * capacitor, 2), -1) - z_real_array[iters]) * (-2 * pow(resistor, 3) * pow(omega_array[iters], 2) * capacitor)/pow(1 + pow(omega_array[iters] * resistor * capacitor, 2), 2);
+    S1_r = 2 * W * (r * pow(1 + pow(angular_frequency(i) * r * c, 2), -1) - z_real_array[iters]) * (-pow(angular_frequency(i) * r * c, 2) + 1)/pow(1 + pow(angular_frequency(i) * r * c, 2), 2);
 
-        // gradient em função do resistor
-        // S1_R = 2 * W * (resistor - z_real_array[iters] * (1 + pow(omega_array[iters]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[iters]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[iters]*resistor*capacitor, 2), 3);
-        S1_R = 2 * W * (resistor * pow(1+pow(omega_array[iters] * resistor * capacitor, 2), -1) - z_real_array[iters]) * (-pow(omega_array[iters] * resistor * capacitor, 2) + 1)/pow(1 + pow(omega_array[iters] * resistor * capacitor, 2), 2);
+    S2_c = 2 * W * (-angular_frequency(i) * pow(r,2) * c * pow(1 + angular_frequency(i) + pow(angular_frequency(i) * r * c, 2), -1) - z_image_array(i)) * (-angular_frequency(i) * pow(r, 2) * (pow(-angular_frequency(i) * c * r, 2) + 1))/(pow(1 + pow(angular_frequency(i)* c * r, 2), 2));
 
-        // capacitor = capacitor - alpha * S1_C
-        capacitor -= alpha * S1_C;
-        
-        resistor -= alpha * S1_R;
-
-        // delta C => 0.001
-        // delta R => 0.001
-        c_error = abs(capacitor_old - capacitor);
-        r_error = abs(resistor_old - resistor);
-
-        // c_error = abs(capacitor - capacitor_old);
-        // r_error = abs(resistor - resistor_old);
-        iters++;
-
-        cout << "c_erro: " << c_error << "\n";
-        cout << "r_error: " << r_error << "\n\n";
-
-        cout << "S1_C: " << S1_C << "\n";
-        // cout << "S1_C_2: " << S1_C_2 << "\n\n";
-
-        cout << "S1_R: " << S1_R << "\n";
-        // cout << "S1_R_2: " << S1_R_2 << "\n\n";
+    S2_r = 2 * W * (-angular_frequency(i) * pow(r,2) * c * pow(1 + angular_frequency(i) + pow(angular_frequency(i) * r * c, 2), -1) - z_image_array(i)) * (-2 * c * r * angular_frequency(i))/(pow(1 + pow(angular_frequency(i)* c * r, 2), 2));
+       
 
     return 0;    
 }
@@ -269,155 +233,3 @@ double Gradient(double xo[], double fxo, int n, int MAX_IT, int func, float LAMB
 }
 
 
-
-
-
-
-
-
-
-
-    
-    
-    
-
-
-    }
-
-
-
-
-
-
-
-
-
-}
-
-/****
- * 
- * Função ouble derivative_C(double W=1, double alpha=0.01)
- * 
- * Descrição : Função que é responsável pela método de gradiente.
- *             Nessa função tem as derivadas S1_C, S1_R.
- * 
- * Parâmetros: W=1: É o peso da equação que já está definido na entrada
- *             aplha: Taxa de aprendizado
- * 
- * 
- * Retorno: Novo capacitor e o resistor           
- * 
- ****/
-// double gradient_descent(double W, double alpha, double resistor, double capacitor, unsigned int max_iters, double omega_array[], double z_real_array[], double z_image_array[])
-// {
-//     double S1_C,S1_R, capacitor_old,resistor_old, error, c_error, r_error;
-//     error = 0.001;
-
-    
-//     // interações 
-//     unsigned int i = 0;
-//     c_error = error + 1;
-//     r_error = error + 1;
-    
-//     while (error < c_error  && error < r_error && i < max_iters) {
-        
-//         capacitor_old = capacitor;
-//         resistor_old = resistor;
-        
-//         // gradient em função do capacitor
-//         S1_C = 2 * W * (2* pow(omega_array[i], 2) * resistor * capacitor * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))))/pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
-        
-//         // gradient em função do resistor
-//         S1_R = 2 * W * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
-
-
-//         // capacitor = capacitor - alpha * S1_C
-//         capacitor -= alpha * S1_C;
-        
-//         resistor -= alpha * S1_R;
-
-//         // delta C => 0.001
-//         // delta R => 0.001
-//         c_error = abs(capacitor_old - capacitor);
-//         r_error = abs(resistor_old - resistor);
-//         i++;
-
-//         cout << "c_erro: " << c_error << "\n";
-//         cout << "r_error: " << r_error << "\n\n";
-
-
-//     }
-//         return 0;
-// }
-
-
-
- 
- 
- 
- // gradient_descent(1, 0.001, 0.1, 0.1, 10000);
-
-
-
-
-    // Gradient Z' => dS1/dC
-    // int W = 1;
-    // double S1_C;
-  
-
-    // S1_C => capacitor
-    // S1_C = 2 * W * (2* O * resistor * capacitor * (resistor - z_real_array[i] * (1 + O * R * C )))/pow(1+ O * C * R, 3);
-
-    // Gradient Z' => dS1/dR
-    // double S1_R;
-    // S1_R => resistor
-    // S1_R = 2 * W * (resistor - z_real_array[i] * (1 + O * R * C)) * (-1 + 3 * O * R * C)/R*pow(1+O*R*C, 3);
-
-    // Gradient Z" => dS2/dC
-    // double S2_C, S2_R;
-
-    // S2_C => capacitor 
-    // S2_C = 2 * W * (-omega_array[i] * R * capacitor - z_image_array[i] * (1 + O[i]*R*C))*(1 + 3*O[i]*R*C)/O[i]*R*C*pow(1+O[i]*R*C, 3);
-
-
-    // S2_R => resistor
-    // S2_R = 2 * W * (2 * (-omega_array[i] * R * capacitor - z_image_array[i]*(1 + O[i]*R*C))*(2*O[i]*R*C + 1))/omega_array[i]*pow(resistor, 3)*capacitor*pow(1+O[i]*R*C, 3);
-
-
-    //x_(k+1) = X_k - alpha*gradient(x_k) => S1
-    // double alpha, resistor_old, capacitor_old, S1_C_sum, S1_R_sum;
-    // capacitor = capacitor - alpha*S1_C;
-    
-    // resistor
-    // resistor = resistor - alpha*S1_R;
-    
-    // i = 0;
-    // resistor_old, capacitor_old = 0;
-    // S1_C_sum, S1_R_sum = 0.0;
-    // // alpha = 0.01;
-  
-    // while (abs(resistor - resistor_old) > 0.001 && abs(capacitor - capacitor_old) > 0.001) {
-        
-    //     S1_C = 2 * W * (2* pow(omega_array[i], 2) * resistor * capacitor * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))))/pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
-    //     // S1_C = 2 * W * ((resistor/1 + pow(resistor*capacitor*omega_array[i], 2))-z_real_array[i])*(2*pow(omega_array[i], 2)*resistor*capacitor)/pow(1+pow(omega_array[i]*resistor*capacitor,2),2);
-    //     S1_C_sum = S1_C_sum + S1_C;
-        
-    //     S1_R = 2 * W * (resistor - z_real_array[i] * (1 + pow(omega_array[i]*resistor*capacitor, 2))) * (-1 + 3 * pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor, 2)*pow(1 + pow(omega_array[i]*resistor*capacitor, 2), 3);
-    //     // S1_R = 2*W*((resistor/1+pow(omega_array[i]*resistor*capacitor,2))-z_real_array[i])*(-1+3*pow(omega_array[i]*resistor*capacitor, 2))/pow(resistor,2)*pow(1+pow(omega_array[i]*capacitor*resistor,2),2);
-    //     S1_R_sum = S1_R_sum + S1_R;
-
-    //     resistor_old = resistor;
-    //     capacitor_old = capacitor;
-
-    //     capacitor = capacitor_old - alpha * S1_C;
-    //     resistor = resistor_old - alpha * S1_R;
-    //     i++;
-
-    //     cout << "S1_C_sum: " << S1_C_sum << "\n";
-    //     cout << "S1_R_sum: " << S1_R_sum << "\n";
-    //     cout << "Capacitor: " << capacitor << "\n";
-    //     cout << "Resistor: " << resistor << "\n";
-        
-    // }
-
-    // gradient_descent(1, 0.001, 0.1, 0.1, 10000, omega_array[n_f+1], z_real_array[n_f], z_image_array[n_f])
