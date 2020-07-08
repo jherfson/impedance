@@ -3,6 +3,9 @@ import numpy as np
 
 
 # DADOS
+# data_f -> frequência
+data_f = np.loadtxt("result.txt", delimiter=" ", usecols=(0))
+
 # data_x -> Z'
 data_x= np.loadtxt("result.txt", delimiter=" ", usecols=(1))
 
