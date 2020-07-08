@@ -23,18 +23,27 @@ c = 0.1
 # w1
 r = 0.1
 
-def y_hat(x, c, r):
-    return c + r * data_x
+def angular_frequency(data_f):
+    return 2 * np.pi * data_f
 
-print(y_hat(1.5, c, r))
+def y_hat(c, r):
+    z_real = r * (1+ (angular_frequency(data_f) * c * r)**2)**-1 
+    z_image = - (angular_frequency(data_f) * r**2 * c * (1 + (angular_frequency(data_f) * r * c)**2)**-1)
+    plt.plot(z_real,z_image, "bo")
+    plt.savefig("figura.png", dpi=1200)
+
+    return z_real + z_image
+    #return c + r * data_x
+
+print(y_hat(c, r))
 
 
 def plot_line(data_x, data_y, c, r):
     x_values = [i for i in range(int(min(data_x)) - 1, int(max(data_x)) + 2)]
-    y_values = [y_hat(x, c, r) for x in x_values]
-    plt.plot(x_values,y_values,'r')
-    plt.plot(data_x,data_y,'bo')
-    #plt.savefig("figura-2.png", dpi=1200)
+    y_values = [y_hat(c, r) for x in x_values]
+    plt.plot(x_values,y_values)
+    #plt.plot(data_x,-data_y,'bo')
+    plt.savefig("figura-2.png", dpi=1200)
 
 plot_line(data_x, data_y, c, r) 
 
@@ -76,7 +85,7 @@ def gradient_descent(c, r, data_x, data_y, alpha, epoch):
     return c, r, custo
 
 
-print(gradient_descent(c, r, data_x, data_y, alpha, epoch))
+
 
     
 # plt.scatter(data_x, -1*data_y)
