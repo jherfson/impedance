@@ -7,10 +7,10 @@ z_real_txt = np.loadtxt(path, delimiter=" ", usecols=(1))
 z_image_txt = np.loadtxt(path, delimiter=" ", usecols=(2))
 
 alpha = 0.01
-c = 0.1
-r = 0.1
+c = 10
+r = 100
 max_itera = 100
-step_tolerance = 0.001
+step_tolerance = 0.0001
 
 def angular_frequency(frequency):
     return 2 * np.pi * frequency
@@ -24,10 +24,14 @@ def y_hat(frequency, c, r):
 
 def gradient_descent(c, r, z_real_txt ,z_image_txt, alpha):
     
+    count = 1
     step_c = 0
     step_r = 0
     for i in range(max_itera):
         W=1
+        
+        c_old = c
+        r_old = r
         print(f'Frequência: {frequency[i]}')
 
         denominador = (1 + (angular_frequency(frequency[i]) * r * c)**2)**2 
@@ -44,26 +48,25 @@ def gradient_descent(c, r, z_real_txt ,z_image_txt, alpha):
 
         step_c = alpha * sc        
         c -= step_c
+        # print(f'Step C:{step_c}')
         print(f'Novo C:{c}')
 
         step_r = alpha * sr
         r -= step_r
-        print(f'Novo R:{r}')
+        # print(f'Step R:{step_r}')
+        print(f'Novo R:{r}\n')
 
-        if abs((step_c <= step_tolerance and step_r <= step_tolerance)):
-            break
-
-    return c, r
-
-# epoch = 30
-
-# def gradient_descent(c, r, z_real_txt, z_image_txt, alpha, epoch):
-#     custo = np.zeros(epoch)
-#     for i in range(epoch):
-#         c , r = gradient_descent_step(c, r, z_real_txt, z_image_txt, alpha)
-#         custo[i] = MSE(z_real_txt, z_image_txt)
+        count += i
         
-#     return c, r, custo
+
+        # if abs((step_c <= step_tolerance) and (step_r <= step_tolerance)):
+        #     break
+        if abs((c_old - c) <=step_tolerance and (r_old - r) <=step_tolerance):
+            break 
+    print(f'Contador:{count}, C_old:{c_old}, R_old:{r_old}\n')
+    print(r'$\Delta$c: ', (c_old-c))
+    print(r'$\Delta$r: ', (r_old-r))
+    return c, r, sc, sr
 
 
 
