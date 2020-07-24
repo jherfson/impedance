@@ -1,7 +1,8 @@
 # import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-path = "/home/jherfson/Dropbox/Research_Jherfson/Estabilidade termodinâmica e diagramas de fase teóricos/impedancia/python/result.txt"
+path = os.path.join(os.path.abspath('.'), 'result.txt')
 impedancia = np.loadtxt(path, delimiter=" ")
 
 
