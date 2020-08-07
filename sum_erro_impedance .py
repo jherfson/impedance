@@ -62,7 +62,7 @@ def gradient_descent(c, r, f, z_re_exp, z_im_exp):
     r_old = 2 * r
     count = 0
 
-    while (abs(r_old - r)/r_old > 0.001 or abs(c_old - c)/c_old > 0.001) and count < 10:
+    while (abs(r_old - r)/r_old > 0.001 or abs(c_old - c)/c_old > 0.001):# and count < 10:
         # z_c = 1/(i * w * c)
         z_c = 1/(i * w * C)
         # z_r = r
@@ -126,8 +126,6 @@ def gradient_descent(c, r, f, z_re_exp, z_im_exp):
         print(f'Novo r:{r}')
         print(f'C = rCo: {c*Co}')
         print(f'R = rRo: {r*Ro}\n')
-        C = c*Co
-        R = c*Co
         count += 1
 
     print(f'Contador:{count}, C_old:{c_old}, R_old:{r_old}\n')
