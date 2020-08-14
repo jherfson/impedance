@@ -21,31 +21,6 @@ z_im_exp = np.array(z_imag_txt)
 C = 4e-7  # capacitor -> fara
 R = 100000  # resitor -> Ohm
 
-# c = 0.001
-# r = 1
-# z_c = 1/(i*w*c)
-# z_r = r
-# z = 1/( 1/z_r + 1/z_c )
-# z_re = z.real
-# z_im = z.imag
-
-# tau = r*c
-
-
-# def angular_frequency(frequency):
-#     return 2 * np.pi * frequency
-
-
-# def impedance(frequency, c, r):
-#     z_real = r * (1 + (angular_frequency(frequency) * c * r)**2)**-1
-#     z_imag = - (angular_frequency(frequency) * r**2 * c *
-#                 (1 + (angular_frequency(frequency) * r * c)**2)**-1)
-#     return complex(z_real, z_imag)
-# Ro -> chute inicial R => r = R/Ro
-# Co -> chute incial C  => c = C/Co
-
-
-
 def gradient_descent(C, R, f, z_re_exp, z_im_exp):
     i = complex(0, 1)
     w = 2*np.pi*f
